@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .disabled-link {
+        pointer-events: none;
+        opacity: 0.5; /* or any other styling to visually indicate it's disabled */
+    }
+</style>
+
+<div class="container pt-4">
+    <div class="row p-0 mt-4">
+        <div class="col-lg-4 mx-auto shadow p-0">
+            <div class="alert alert-info">
+                <h2>Add New TODO</h2>
+            </div>
+            <div class="p-4">
+                <form action="/adminadd-todo/" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <hr>
+                    <input type="submit" value="ADD" class="btn btn-info">
+                </form>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="border">
+
+                {% if todos %}
+                    <div class="p-4">
+                        <br>
+                        <br>
+                        <div class="alert alert-info text-center">
+                            <p class="" style="font-size: 30px;">No Todos</p>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                {% else %}
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Employee</th>
+                                    <th>Action</th>
+                                    
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for todo in paginated_todos %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ todo.title }}</td>
+                                        <td>
+                                            {% if todo.status == 'C' %}
+                                                ✅
+                                            {% else %}     
+                                                🕒
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ todo.priority }}</td>
+                                        <td>{{ todo.assigned_to.full_name }}</td>
+                                        <td>
+                                            {% if todo.user == request.user %}
+                                            <a href="{% url 'delete_todo_admin' todo.id %}" title="Delete">🗑️</a> 
+                                                
+                                            {% else %}
+                                                <span class="disabled-link">🗑️</span>  
+                                            {% endif %}
+                                            <a href="/update-task/{{ todo.id }}" title="update" class="enabled-link">🔄</a>
+                                            {% if todo.status == 'P' %}
+                                                <a href="/admin-change-todo/{{ todo.id }}/C" title="Mark Completed"
+                                                    class="enabled-link">✅</a>
+                                            {% else %}
+                                                <a href="/admin-change-todo/{{ todo.id }}/P" title="Mark Pending"
+                                                    class="enabled-link">🕒</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if paginated_todos.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1" aria-label="First">
+                                            <span aria-hidden="true">&laquo;&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ paginated_todos.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&laquo;&laquo;</span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                                    </li>
+                                {% endif %}
+                        
+                                {% for i in paginated_todos.paginator.page_range %}
+                                    <li class="page-item {% if i == paginated_todos.number %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                {% endfor %}
+                        
+                                {% if paginated_todos.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ paginated_todos.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ paginated_todos.paginator.num_pages }}" aria-label="Last">
+                                            <span aria-hidden="true">&raquo;&raquo;</span>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                                    </li>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" aria-hidden="true">&raquo;&raquo;</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

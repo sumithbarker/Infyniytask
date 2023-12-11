@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container pt-4">
+    <div class="row p-0 mt-4">
+        <div class="col-lg-6 mx-auto shadow p-4">
+            <div class="alert alert-info">
+                <h2>Update Task Assignment</h2>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    
+                        <option value="{{ task.assigned_to }}">{{ task.assigned_to }}</option>
+                        <!-- Add options to select other users -->
+                    </td>
+                    <td>{{todo.priority}}</td>
+                    <td>{{todo.assigned_to.full_name}}</td>
+  
+                    <td>
+                    </select>
+
+                </div>
+                {{ form.as_p }}
+                <hr>
+                <input type="submit" value="Update Task" class="btn btn-info">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

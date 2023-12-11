@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Welcome to the Admin Panel</h1>
+
+        <!-- Displaying TODO items -->
+        <h2>TODO Items:</h2>
+        <ul class="list-group">
+            {% for todo in todos %}
+                <li class="list-group-item">{{ todo.title }} - {{ todo.description }}</li>
+                <!-- Display other fields of the TODO item as needed -->
+            {% endfor %}
+        </ul>
+
+        <!-- Form to add new TODO item -->
+        <h2>Add New TODO:</h2>
+        <form method="post" action="" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add TODO</button>
+        </form>
+
+        <!-- Form to assign tasks to users -->
+        <h2>Assign Task:</h2>
+        <form method="post" action="">
+            {% csrf_token %}
+            <!-- Include fields from the AssignTaskForm here -->
+            <!-- For example: -->
+            <div class="form-group">
+                <label for="user">Assign to User:</label>
+                <select class="form-control" id="user" name="user" required>
+                    <!-- Options for users -->
+                    <!-- Example: -->
+                    <!-- <option value="user_id">Username</option> -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="task">Task:</label>
+                <input type="text" class="form-control" id="task" name="task" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Assign Task</button>
+        </form>
+    </div>
+{% endblock %}

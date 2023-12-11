@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .disabled-link {
+        pointer-events: none;
+        opacity: 0.5; /* or any other styling to visually indicate it's disabled */
+    }
+</style>
+<div class="container pt-5">
+    <!-- Content for authenticated users -->
+    {% if user.is_authenticated %}
+        <div class="row p-6 mt-8">
+            <!-- Your authenticated user content here -->
+        </div>
+        <div class="row">
+            <!-- Your authenticated user content here -->
+        </div>
+    {% else %}
+        <!-- Content for non-authenticated users -->
+        <div class="row">
+            <p>Please log in to view this content.</p>
+        </div>
+    {% endif %}
+</div>
+
+    <div class="row p-6 mt-8">
+        <div class="col-lg-12 shadow p-2">
+            <div class="alert alert-info text-center">
+                <h2>Add New TODO</h2>
+            </div>
+            <div class="p-5">
+                <form action="/useradd-todo/" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <hr>
+                    <input type="submit" value="ADD" class="btn btn-info">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            {% if todos|length == 0 %}
+                <div class="p-5 ml-4">
+                    <br>
+                    <br>
+                </div>
+                <br>
+                <br>
+            {% else %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Assigned by</th>          
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for todo in todos %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ todo.title }}</td>
+                                <td>{% if todo.status == 'C' %} ✅ {% else %} 🕒 {% endif %}</td>
+                                <td>{{ todo.priority }}</td>
+                                <td>{% if todo.user == request.user %}
+                                        SELF
+                                    {% else %}
+                                        ADMIN
+                                    {%endif%}
+                                    {% for user in users %}
+                                        {% if user == todo.user %}
+                                            {{ user.username }} <!-- Assuming 'username' is the field to display -->
+                                        {% endif %}
+                                    {% endfor %}  
+
+                                </td>
+                                
+                            
+                                <td>
+                                    {% if todo.assigned_to == request.user.employee %}
+                                        <a href="{% url 'delete_todo_user' todo.id %}" title="Delete" class="enabled-link">🗑️</a>
+                                    {% else %}
+                                        <span> class="disabled-link">🗑️</span>
+
+                                    {% endif %}
+                                  
+                                        <a href="/update-task/{{ todo.id }}" title="update" class="enabled-link">🔄</a>
+                                    {% if todo.status == 'P' %}
+                                        <a href="/change-status/{{ todo.id }}/C" title="Mark Completed">✅</a>
+                                    {% else %}
+                                        <a href="/change-status/{{ todo.id }}/P" title="Mark Pending">🕒</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User List</title>
+</head>
+<body>
+    <h1>User List</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {% for user in custom_users %}
+                <li>{{ user.name }} - {{ user.email }}{% if user.is_superuser %} (Superuser){% endif %}</li>
+                <!-- Display other user attributes as needed -->
+            {% endfor %}
+        </ul>
+    </form>
+</body>
+</html>
